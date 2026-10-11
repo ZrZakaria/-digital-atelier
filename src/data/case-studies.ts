@@ -1,0 +1,252 @@
+import { type Project } from '@/data/projects';
+
+export interface CaseStudy extends Project {
+  architecture?: string;
+  demo?: string;
+}
+
+export const caseStudies: Record<string, CaseStudy> = {
+  'drone-detection': {
+    slug: 'drone-detection',
+    title: 'Drone Detection Pipeline',
+    subtitle: 'Real-time AI surveillance and behavioral classification',
+    shortDescription:
+      'An end-to-end computer vision pipeline for drone detection, multi-object tracking, and behavioral threat classification using YOLOv8 and ByteTrack.',
+    longDescription:
+      'This project implements a complete surveillance-and-perception pipeline: YOLOv8 detects drones in video frames, ByteTrack assigns persistent IDs across frames, and a behavioral classifier using Kalman filtering and polynomial regression categorizes movement as normal, suspect, or hostile. The model was fine-tuned on a balanced dataset (75% long-range / 25% short-range) achieving 95.2% precision and 95.6% mAP50.',
+    accentColor: '#FF5C35',
+    technologies: ['Python', 'YOLOv8', 'ByteTrack', 'OpenCV', 'scikit-learn', 'NumPy', 'Pandas'],
+    role: 'Single developer — designed and implemented the full pipeline from data preparation through behavioral analysis.',
+    repository: 'https://github.com/ZrZakaria/drone_detection_project',
+    year: '2024',
+    features: [
+      'YOLOv8n fine-tuned on 5,358 images (75% far / 25% close range)',
+      'ByteTrack multi-object tracking with persistent ID assignment',
+      'Kalman filter for trajectory smoothing and position prediction',
+      'Polynomial regression for motion trajectory forecasting',
+      'Rule-based behavioral classifier: Normal / Suspect / Hostile',
+      'CSV export of tracking data for further analysis',
+    ],
+    challenges: [
+      'Balancing the dataset to prevent catastrophic forgetting on close-range drones',
+      'Designing threshold rules for behavioral classification that generalize across distances',
+      'Managing computational overhead for real-time processing',
+    ],
+    architecture: `
+      Stage 1: Detection (YOLOv8)
+      └── Fine-tuned on 5,358 images (75% far / 25% close)
+      └── Output: Bounding boxes per frame
+      └── Precision: 0.952 | Recall: 0.912 | mAP50: 0.956
+
+      Stage 2: Tracking (ByteTrack)
+      └── High-confidence detections matched first
+      └── Low-confidence detections associated with existing tracks
+      └── Output: tracking_data.csv (track_id, frame_id, x_center, y_center)
+
+      Stage 3: Behavioral Analysis (Custom)
+      └── Kalman filter for smoothing noisy bounding box coordinates
+      └── Feature extraction: velocity, acceleration, direction changes
+      └── Polynomial regression for future position prediction
+      └── Threat scoring: Normal (0-24) | Suspect (25-59) | Hostile (60-100)
+    `.trim(),
+    verdict: 'verified',
+  },
+  'springstore': {
+    slug: 'springstore',
+    title: 'SpringStore',
+    subtitle: 'E-commerce backend with Domain-Driven Design',
+    shortDescription:
+      'A production-grade e-commerce backend implementing Domain-Driven Design with Spring Boot, featuring product catalog, cart, orders, Stripe payments, and Kinde authentication.',
+    longDescription:
+      'SpringStore is a monorepo e-commerce backend built with Java 21 and Spring Boot 3. It implements clean DDD architecture with aggregate roots (Order, Product, User), value objects, and repository patterns. The system integrates Stripe Checkout for payments, Kinde OAuth2 for authentication, and Liquibase for database migrations. Orders follow a state lifecycle (PENDING → PAID) with webhook-driven status updates.',
+    accentColor: '#D9FF3F',
+    technologies: ['Java 21', 'Spring Boot 3', 'PostgreSQL', 'JPA/Hibernate', 'Stripe', 'Kinde OAuth2', 'Liquibase', 'Docker'],
+    role: 'Single developer — designed the domain model, implemented the payment flow, and configured the infrastructure layer.',
+    repository: 'https://github.com/ZrZakaria/SpringStore',
+    year: '2025',
+    features: [
+      'Domain-Driven Design with aggregates, value objects, and repositories',
+      'Stripe Checkout session creation and webhook validation',
+      'Kinde OAuth2 authentication with role-based access (USER / ADMIN)',
+      'Liquibase migration versioning for schema management',
+      'Product CRUD with image upload support (admin panel)',
+      'Persistent cart management synced with order creation',
+    ],
+    challenges: [
+      'Modeling the Order aggregate to handle concurrent payment states safely',
+      'Implementing idempotent webhook processing to prevent duplicate charges',
+      'Separating domain logic from infrastructure concerns cleanly',
+    ],
+    architecture: `
+      fr.codecake.ecom/
+      ├── order/           # Order aggregate
+      │   ├── domain/      # Aggregates, VOs, Repositories, Services
+      │   ├── application/ # Application services
+      │   └── infrastructure/
+      │       ├── primary/ # REST controllers
+      │       └── secondary/ # JPA entities, external services
+      ├── product/         # Product aggregate
+      └── shared/          # Cross-cutting (auth, errors, JPA)
+
+      Order Lifecycle: PENDING → PAID (via Stripe webhook)
+      Value Objects: OrderStatus, ProductPrice, PublicId, UserAddress
+      Authentication: Kinde OAuth2 → JWT validation → Spring Security
+    `.trim(),
+    verdict: 'verified',
+  },
+  'labproof': {
+    slug: 'labproof',
+    title: 'LabProof',
+    subtitle: 'AI document QA with NLI verification',
+    shortDescription:
+      'A RAG-based document question-answering system that ingests PDFs, retrieves relevant passages via hybrid search, generates cited answers, and verifies claims using NLI to prevent hallucinations.',
+    longDescription:
+      'LabProof implements a complete Retrieval-Augmented Generation pipeline. PDF documents are ingested, chunked, and embedded using Ollama (BGE-M3). Queries use hybrid retrieval combining dense vector search (pgvector) and full-text search (PostgreSQL tsvector) with Reciprocal Rank Fusion. Answers are generated by Qwen3.5 and verified sentence-by-sentence using mDeBERTa NLI, with the system abstaining when confidence is too low.',
+    accentColor: '#E34AFF',
+    technologies: ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'Ollama', 'RAG', 'NLI', 'mDeBERTa'],
+    role: 'Single developer — built the entire RAG pipeline, hybrid retrieval, and verification system.',
+    repository: 'https://github.com/ZrZakaria/LabProof',
+    year: '2025',
+    features: [
+      'Complete RAG pipeline: PDF ingestion → chunking → embedding → retrieval → generation → verification',
+      'Hybrid retrieval with dense (pgvector) + full-text (tsvector) search fused via RRF',
+      'NLI-based claim verification using mDeBERTa to score entailment per sentence',
+      'Abstention mechanism: system declines to answer when no relevant context exists',
+      'Query logging with timing metrics and groundedness scores',
+      'Local inference via Ollama — no cloud API dependencies',
+    ],
+    challenges: [
+      'Tuning RRF fusion parameter k for optimal dense/FTS trade-off',
+      'Balancing verification strictness against recall in answer generation',
+      'Managing local Ollama model memory constraints',
+    ],
+    architecture: `
+      RAG Pipeline Flow:
+      ┌──────────────────────────────────────────────────────────────┐
+      │ 1. Ingest: PDF → Text chunks (with overlap) → Embeddings     │
+      │    BGE-M3 (1024-dim) → pgvector HNSW index                  │
+      │                                                              │
+      │ 2. Retrieve: Dense search (cosine) + FTS (tsvector) → RRF   │
+      │    rrf_score(d) = Σ 1/(k + rank_r(d)), k=60                 │
+      │                                                              │
+      │ 3. Generate: Qwen3.5-4B produces draft answer with citations │
+      │                                                              │
+      │ 4. Verify: mDeBERTa-NLI scores each sentence for entailment  │
+      │    Below threshold → mark unsupported / abstain             │
+      └──────────────────────────────────────────────────────────────┘
+
+      Schema: documents → chunks (embedding, tsv) → query_logs
+    `.trim(),
+    verdict: 'verified',
+  },
+  'thinkboard': {
+    slug: 'thinkboard',
+    title: 'ThinkBoard',
+    subtitle: 'Full-stack note-taking application',
+    shortDescription:
+      'A MERN stack note management platform with real-time CRUD operations, Redis rate limiting, and Vercel deployment.',
+    longDescription:
+      'ThinkBoard is a full-stack note-taking application built with React, Node.js, Express, and MongoDB. The backend exposes a RESTful API with full CRUD operations and Upstash Redis rate limiting (100 req/min) to prevent abuse. The frontend uses React 19 with Vite, Tailwind CSS, and client-side routing. Deployed on Vercel with CI/CD.',
+    accentColor: '#365CFF',
+    technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Mongoose', 'Redis', 'Tailwind CSS', 'Vercel'],
+    role: 'Single developer — designed the full-stack architecture and implemented both frontend and backend.',
+    repository: 'https://github.com/ZrZakaria/ThinkBoard_MERN',
+    year: '2024',
+    features: [
+      'Full CRUD operations for notes with MongoDB persistence',
+      'Upstash Redis rate limiting (100 req/min) to prevent API abuse',
+      'React 19 frontend with client-side routing and reusable components',
+      'Responsive design with Tailwind CSS',
+      'GitHub CI/CD deployment pipeline to Vercel',
+    ],
+    challenges: [
+      'Designing the rate limiter middleware to work correctly across distributed deployments',
+      'Managing MongoDB connection pooling for concurrent requests',
+    ],
+    architecture: `
+      Backend (Express):
+      src/
+      ├── config/db.js        # MongoDB connection
+      ├── config/upstash.js   # Redis rate limiter
+      ├── middleware/rateLimiter.js  # 100 req/min middleware
+      ├── models/Note.js      # Mongoose schema
+      ├── routes/notesRoutes.js # REST endpoints
+      └── server.js           # Entry point
+
+      Frontend (React 19 + Vite):
+      ├── Client-side routing (react-router)
+      ├── Reusable NoteCard, NoteForm components
+      └── Deployed on Vercel (CI/CD from GitHub)
+    `.trim(),
+    verdict: 'verified',
+  },
+  'foodlik': {
+    slug: 'foodlik',
+    title: 'FoodLik',
+    subtitle: 'Android food delivery application',
+    shortDescription:
+      'A Java Android application for food discovery and delivery with restaurant browsing, cart management, order tracking, and Google Maps integration.',
+    longDescription:
+      'FoodLik is a complete Android food delivery app built in Java. It features user authentication, restaurant browsing with menus, cart management, order placement and tracking, and order history. The app integrates a REST API via Retrofit/GSON, Google Maps SDK for restaurant locations and delivery tracking, and Glide for image loading within a fragment-based architecture.',
+    accentColor: '#FF5C35',
+    technologies: ['Java', 'Android SDK', 'Material Design', 'Retrofit', 'GSON', 'Glide', 'Google Maps SDK'],
+    role: 'Single developer — built the entire Android application from UI to API integration.',
+    repository: 'https://github.com/ZrZakaria/FoodLik',
+    year: '2024',
+    features: [
+      'User authentication flow with session management',
+      'Restaurant browsing with menu display and search',
+      'Shopping cart with quantity management and price calculation',
+      'Order placement with status tracking',
+      'Google Maps integration for restaurant location and delivery tracking',
+      'Order history with detailed receipt view',
+    ],
+    challenges: [
+      'Managing fragment lifecycle and state across navigation',
+      'Handling offline scenarios and network error recovery',
+    ],
+    verdict: 'verified',
+  },
+  'cnesten-lims': {
+    slug: 'cnesten-lims',
+    title: 'CNESTEN LIMS',
+    subtitle: 'Laboratory information management system',
+    shortDescription:
+      'A monorepo LIMS for a nuclear spectrometry laboratory, implementing ISO 11929 calculations, sample tracking, and report generation with Spring Boot and Angular.',
+    longDescription:
+      'During my PFA internship at CNESTEN, I contributed to a Laboratory Information Management System for the Gamma Spectrometry (GSA) laboratory. The system digitizes the complete lab workflow: demande submission, sample reception, preparation, analysis, and report generation. It implements ISO 11929 calculation engines for activity determination with decision thresholds and detection limits. Built as a monorepo with Spring Boot 4.1 backend and Angular 22 frontend.',
+    accentColor: '#D9FF3F',
+    technologies: ['Java 25', 'Spring Boot 4.1', 'Angular 22', 'PostgreSQL', 'JPA/Hibernate', 'OAuth2', 'ISO 11929', 'Docker'],
+    role: 'PFA Internship collaborator — designed modular architecture, developed REST APIs for the analysis workflow, and implemented business validation logic.',
+    repository: 'https://github.com/AdilDani/cnesten-lims',
+    year: '2026',
+    features: [
+      'Domain-driven monorepo architecture with package-by-feature organization',
+      'ISO 11929 calculation engine for activity determination and detection limits',
+      'State machine workflow for demande management (draft → accepted → received → analyzed)',
+      'Kinde OAuth2 authentication with opaque server-side tokens',
+      'Angular 22 frontend with generated OpenAPI client and i18n support',
+      'Excel file management for report generation',
+    ],
+    challenges: [
+      'Implementing complex nuclear physics calculations with proper uncertainty propagation',
+      'Designing the state machine to handle multi-laboratory workflows correctly',
+    ],
+    architecture: `
+      cnesten-lims/
+      ├── lims_backend/              # Spring Boot application
+      │   └── src/main/java/
+      │       ├── core/              # Shared cross-cutting concerns
+      │       └── labs/
+      │           └── gsa/           # Gamma spectrometry lab
+      ├── cnesten-lims-frontend/     # Angular 22 application
+      │   └── src/app/
+      │       ├── core/api/          # Generated OpenAPI client
+      │       └── labs/              # Lab-specific modules
+      └── docs/
+          ├── WORKFLOW_SPEC.md       # State machine definition
+          └── CALCULATION_SPEC.md    # ISO 11929 formulas
+    `.trim(),
+    verdict: 'verified',
+  },
+};
