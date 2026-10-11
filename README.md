@@ -117,11 +117,22 @@ npm run preview
 
 ## Deployment
 
-### Cloudflare Pages (Recommended)
-1. Push to GitHub: `git push origin main`
-2. Connect repo to Cloudflare Pages
-3. Build command: `npm run build`
-4. Output directory: `dist`
+### Cloudflare Pages (Recommended) — 2-minute setup
+
+1. Go to https://dash.cloudflare.com/pages
+2. Click **"Create a project"** → **Connect to Git**
+3. Select your repo: `ZrZakaria/-digital-atelier`
+4. Cloudflare auto-detects Vite — confirm these settings:
+   - **Production branch**: `main`
+   - **Build command**: `npm run build`
+   - **Output directory**: `dist`
+   - **Root directory**: `/`
+5. Click **Save and Deploy**
+
+Your live site will be at: `https://digital-atelier.pages.dev`
+
+#### Optional: Custom domain
+In Cloudflare Pages → **Custom domains** → add your domain. Cloudflare provisions free SSL automatically.
 
 ### GitHub Pages
 1. Enable Pages in repo settings → Source: GitHub Actions
