@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   deployments: write
+  id-token: write
 
 jobs:
   deploy:
@@ -29,11 +30,10 @@ jobs:
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/pages-action@1
         with:
-          projectName: 'digital-atelier'
-          workingDir: '.'
-          directory: 'dist'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: digital-atelier
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
